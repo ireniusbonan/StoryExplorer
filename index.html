@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Story Explorer</title>
+
+    <link rel="manifest" href="/manifest.json" />
+
+    <link rel="stylesheet" href="/src/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"
+      defer
+    ></script>
+  </head>
+
+  <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <header>
+      <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="logo">StoryExplorer</div>
+        <ul class="nav-links">
+          <li><a href="#/stories" aria-current="page">Cerita</a></li>
+          <li><a href="#/add">+ Tambah Cerita</a></li>
+          <li><a href="#/logout" id="logout-link">Keluar</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main-content" tabindex="-1" role="main"></main>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="footer-content">
+        <p>© 2025 Irenius Bonan. All rights reserved.</p>
+        <p>Aplikasi Web Belajar Pengembangan Web Intermediate</p>
+        <div class="social-links">
+          |
+          <a
+            href="https://www.linkedin.com/in/irenius-bonan-3aa93a2a3/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn Irenius Bonan"
+            >LinkedIn</a
+          >
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      crossorigin=""
+      defer
+    ></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const skipLink = document.querySelector(".skip-link");
+        const mainContent = document.getElementById("main-content");
+        skipLink.addEventListener("click", (event) => {
+          event.preventDefault();
+          skipLink.blur();
+          mainContent.setAttribute("tabindex", "-1");
+          mainContent.focus();
+          mainContent.scrollIntoView({ behavior: "smooth" });
+        });
+      });
+    </script>
+  </body>
+</html>

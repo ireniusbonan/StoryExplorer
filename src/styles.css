@@ -1,0 +1,445 @@
+/* Reset dan dasar */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  line-height: 1.6;
+  transition: background-color 0.3s ease;
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover,
+a:focus {
+  text-decoration: underline;
+  outline: none;
+}
+
+/* Navbar */
+.navbar {
+  background-color: #004080;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar .logo {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li a {
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-links li a[aria-current="page"],
+.nav-links li a:hover,
+.nav-links li a:focus {
+  background-color: #0066cc;
+  outline: none;
+}
+
+/* Skip to content */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #004080;
+  color: white;
+  padding: 8px 16px;
+  z-index: 100;
+  transition: top 0.3s ease;
+  border-radius: 0 0 4px 4px;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: none;
+}
+
+/* Main content */
+main#main-content {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  min-height: 60vh;
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+/* Form styles */
+.form-section {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+fieldset {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+legend {
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 0 0.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+input[readonly] {
+  background-color: #eee;
+  cursor: not-allowed;
+}
+
+/* Upload section */
+.upload-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.upload-btn,
+.submit-btn {
+  background-color: #004080;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.upload-btn:hover,
+.submit-btn:hover,
+.upload-btn:focus,
+.submit-btn:focus {
+  background-color: #0066cc;
+  outline: none;
+}
+
+.upload-label {
+  cursor: pointer;
+  color: #004080;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Latitude & Longitude inputs */
+.latlng-inputs {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.latlng-inputs label {
+  margin: 0;
+}
+
+.latlng-inputs input {
+  width: 120px;
+}
+
+/* Preview gambar */
+#preview img,
+#preview video {
+  max-width: 120px;
+  border-radius: 12px;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.15);
+}
+
+/* Story list */
+.story-list {
+  padding: 0;
+  list-style: none;
+}
+
+.story-list li {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1rem;
+}
+
+.story-list img {
+  max-width: 100%;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+  aspect-ratio: 16/9; /* Menjaga rasio aspek gambar */
+  object-fit: cover; /* Memastikan gambar menutupi area */
+}
+
+/* Small primary button for detail */
+.btn-primary-small {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  background-color: #007bff; /* Warna biru konsisten dengan tautan */
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary-small:hover,
+.btn-primary-small:focus {
+  background-color: #0066cc;
+  outline: none;
+}
+
+/* Footer */
+.site-footer {
+  background-color: #004080;
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+}
+
+/* Halaman Login & Register */
+.auth-container {
+  max-width: 400px;
+  margin: 3rem auto;
+  padding: 2rem 2.5rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.auth-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #004080;
+  font-weight: 700;
+  font-size: 1.8rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #004080;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 64, 128, 0.5);
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #004080;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #0066cc;
+  outline: none;
+}
+
+.form-note {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.form-note a {
+  color: #004080;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.form-note a:hover,
+.form-note a:focus {
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+/* --- Gaya untuk Offline View BARU --- */
+.offline-container {
+  max-width: 500px;
+  margin: 3rem auto;
+  padding: 2rem;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.offline-title {
+  color: #d9534f; /* Warna merah untuk indikasi error/masalah */
+  margin-bottom: 1rem;
+  font-size: 2em;
+}
+
+.offline-message {
+  font-size: 1.1em;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.offline-suggestion {
+  font-size: 0.9em;
+  color: #777;
+  margin-bottom: 1.5rem;
+}
+
+.offline-icon {
+  display: block; /* Memastikan ikon di tengah */
+  margin: 0 auto 1.5rem auto;
+  max-width: 150px;
+  animation: pulse 1.5s infinite alternate; /* Animasi berkedip */
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .auth-container,
+  .offline-container {
+    /* Tambahkan offline-container */
+    margin: 2rem 1rem;
+    padding: 1.5rem 1.5rem;
+  }
+
+  .navbar {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .nav-links {
+    margin-top: 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
+/* View Transition API support */
+/* Saat transisi dimulai, opacity turun */
+@supports (view-transition: none) {
+  main#main-content {
+    view-transition-name: main-content;
+  }
+
+  body::view-transition-old(root),
+  body::view-transition-new(root) {
+    animation-timing-function: ease-in-out;
+  }
+
+  body::view-transition-old(main#main-content),
+  body::view-transition-new(main#main-content) {
+    animation-duration: 400ms;
+    animation-fill-mode: forwards;
+  }
+
+  /* Fade out lama */
+  body::view-transition-old(main#main-content) {
+    animation-name: fadeOut;
+  }
+
+  /* Fade in baru */
+  body::view-transition-new(main#main-content) {
+    animation-name: fadeIn;
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
