@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Story Explorer</title>
+
+    <link rel="manifest" href="data:application/json;base64,ew0KICAibmFtZSI6ICJTdG9yeSBFeHBsb3JlciIsDQogICJzaG9ydF9uYW1lIjogIlN0b3J5RXgiLA0KICAiZGVzY3JpcHRpb24iOiAiQXBsaWthc2kgdW50dWsgbWVuamVsYWphaGkgZGFuIGJlcmJhZ2kgY2VyaXRhIGRlbmdhbiBsb2thc2kuIiwNCiAgInN0YXJ0X3VybCI6ICIvaW5kZXguaHRtbCIsDQogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLA0KICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmZmZmIiwNCiAgInRoZW1lX2NvbG9yIjogIiMwMDQwODAiLA0KICAiaWNvbnMiOiBbDQogICAgew0KICAgICAgInNyYyI6ICIvaWNvbnMvaWNvbi0xOTJ4MTkyLnBuZyIsDQogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsDQogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLA0KICAgICAgInB1cnBvc2UiOiAiYW55Ig0KICAgIH0sDQogICAgew0KICAgICAgInNyYyI6ICIvaWNvbnMvaWNvbi01MTJ4NTEyLnBuZyIsDQogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsDQogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLA0KICAgICAgInB1cnBvc2UiOiAiYW55Ig0KICAgIH0sDQogICAgew0KICAgICAgInNyYyI6ICIvaWNvbnMvaWNvbi1tYXNrYWJsZS0xOTJ4MTkyLnBuZyIsDQogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsDQogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLA0KICAgICAgInB1cnBvc2UiOiAibWFza2FibGUiDQogICAgfSwNCiAgICB7DQogICAgICAic3JjIjogIi9pY29ucy9pY29uLW1hc2thYmxlLTUxMng1MTIucG5nIiwNCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwNCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsDQogICAgICAicHVycG9zZSI6ICJtYXNrYWJsZSINCiAgICB9DQogIF0sDQogICJwcmVmZXJfcmVsYXRlZF9hcHBsaWNhdGlvbnMiOiBmYWxzZQ0KfQ0K" />
+
+    
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"
+      defer
+    ></script>
+    <script type="module" crossorigin src="/assets/index-2eaf373d.js"></script>
+    <link rel="stylesheet" href="/assets/index-a45e0f55.css">
+  <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
+
+  <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <header>
+      <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="logo">StoryExplorer</div>
+        <ul class="nav-links">
+          <li><a href="#/stories" aria-current="page">Cerita</a></li>
+          <li><a href="#/add">+ Tambah Cerita</a></li>
+          <li><a href="#/logout" id="logout-link">Keluar</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main-content" tabindex="-1" role="main"></main>
+
+    <footer class="site-footer" role="contentinfo">
+      <div class="footer-content">
+        <p>© 2025 Irenius Bonan. All rights reserved.</p>
+        <p>Aplikasi Web Belajar Pengembangan Web Intermediate</p>
+        <div class="social-links">
+          |
+          <a
+            href="https://www.linkedin.com/in/irenius-bonan-3aa93a2a3/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn Irenius Bonan"
+            >LinkedIn</a
+          >
+        </div>
+      </div>
+    </footer>
+
+    
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      crossorigin=""
+      defer
+    ></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const skipLink = document.querySelector(".skip-link");
+        const mainContent = document.getElementById("main-content");
+        skipLink.addEventListener("click", (event) => {
+          event.preventDefault();
+          skipLink.blur();
+          mainContent.setAttribute("tabindex", "-1");
+          mainContent.focus();
+          mainContent.scrollIntoView({ behavior: "smooth" });
+        });
+      });
+    </script>
+  </body>
+</html>
