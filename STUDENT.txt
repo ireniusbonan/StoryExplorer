@@ -1,0 +1,4 @@
+Dengan ini saya melampirkan URL hasil deployment proyek akhir Submission Kedua untuk kelas Belajar Pengembangan Web Intermediate:
+👉 https://ireniusbonan.github.io/StoryExplorer/
+
+Aplikasi ini dibangun menggunakan Vite dan telah dideploy melalui GitHub Pages.
