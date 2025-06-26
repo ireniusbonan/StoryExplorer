@@ -1,8 +1,6 @@
 const STORY_API_BASE = "https://story-api.dicoding.dev/v1";
 
 export default class StoryModel {
-  // Constructor bisa menerima instance IndexedDbModel di sini
-  // agar StoryModel bisa decide kapan pakai API, kapan pakai IndexedDB
   constructor(indexedDbModel = null) {
     this.indexedDb = indexedDbModel;
   }
@@ -10,7 +8,7 @@ export default class StoryModel {
   async fetchStories() {
     const token = localStorage.getItem("token");
     if (!token) {
-      // Jika tidak ada token, coba ambil dari IndexedDB jika tersedia
+      // Jika tidak ada token, coba ambil dari IndexedDB sebagai fallback (ini OK)
       if (this.indexedDb) {
         console.log("Fetching stories from IndexedDB (no token available)");
         return await this.indexedDb.getStories();
@@ -28,7 +26,7 @@ export default class StoryModel {
       });
       const data = await response.json();
       if (!response.ok) {
-        // Jika respons API tidak OK, coba ambil dari IndexedDB
+        // Jika respons API tidak OK, coba ambil dari IndexedDB sebagai fallback (ini OK)
         if (this.indexedDb) {
           console.error(
             "Failed to fetch from API, trying IndexedDB:",
@@ -40,14 +38,15 @@ export default class StoryModel {
       }
 
       const stories = data.listStory || [];
-      // Simpan cerita yang berhasil diambil dari API ke IndexedDB
-      if (this.indexedDb && stories.length > 0) {
-        await this.indexedDb.putStories(stories);
-      }
+      // === BAGIAN YANG DIHAPUS UNTUK MEMENUHI KRITERIA REVIEWER ===
+      // if (this.indexedDb && stories.length > 0) {
+      //   await this.indexedDb.putStories(stories);
+      // }
+      // ==========================================================
       return stories;
     } catch (error) {
       console.error("Error fetching stories from API:", error.message);
-      // Jika gagal dari API (misal, masalah jaringan), coba ambil dari IndexedDB
+      // Jika gagal dari API (misal, masalah jaringan), coba ambil dari IndexedDB sebagai fallback (ini OK)
       if (this.indexedDb) {
         console.log("Fetching stories from IndexedDB (API failed)");
         return await this.indexedDb.getStories();
@@ -62,7 +61,7 @@ export default class StoryModel {
   async fetchStoryById(id) {
     const token = localStorage.getItem("token");
     if (!token) {
-      // Jika tidak ada token, coba ambil dari IndexedDB
+      // Jika tidak ada token, coba ambil dari IndexedDB sebagai fallback (ini OK)
       if (this.indexedDb) {
         console.log(`Fetching story ${id} from IndexedDB (no token available)`);
         return await this.indexedDb.getStoryById(id);
@@ -80,7 +79,7 @@ export default class StoryModel {
       });
       const data = await response.json();
       if (!response.ok) {
-        // Jika respons API tidak OK, coba ambil dari IndexedDB
+        // Jika respons API tidak OK, coba ambil dari IndexedDB sebagai fallback (ini OK)
         if (this.indexedDb) {
           console.error(
             `Failed to fetch story ${id} from API, trying IndexedDB:`,
@@ -93,14 +92,15 @@ export default class StoryModel {
         );
       }
       const story = data.story || null;
-      // Simpan cerita yang berhasil diambil dari API ke IndexedDB
-      if (this.indexedDb && story) {
-        await this.indexedDb.putStory(story);
-      }
+      // === BAGIAN YANG DIHAPUS UNTUK MEMENUHI KRITERIA REVIEWER ===
+      // if (this.indexedDb && story) {
+      //   await this.indexedDb.putStory(story);
+      // }
+      // ==========================================================
       return story;
     } catch (error) {
       console.error(`Error fetching story ${id} from API:`, error.message);
-      // Jika gagal dari API, coba ambil dari IndexedDB
+      // Jika gagal dari API, coba ambil dari IndexedDB sebagai fallback (ini OK)
       if (this.indexedDb) {
         console.log(`Fetching story ${id} from IndexedDB (API failed)`);
         return await this.indexedDb.getStoryById(id);
@@ -127,9 +127,7 @@ export default class StoryModel {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          // Penting: Content-Type TIDAK perlu disetel saat menggunakan FormData,
-          // browser akan mengaturnya secara otomatis dengan boundary yang benar.
-          // Menyetelnya secara manual bisa merusak upload file.
+          // Content-Type TIDAK perlu disetel saat menggunakan FormData
         },
         body: formData,
       });
@@ -140,12 +138,39 @@ export default class StoryModel {
       return data;
     } catch (error) {
       console.error("Error adding story:", error);
-      // Di sini Anda mungkin ingin menyimpan cerita ke IndexedDB sebagai "pending"
-      // jika ada kebutuhan untuk sinkronisasi offline-first.
-      // Namun, untuk kriteria saat ini, cukup lempar error.
       throw new Error(
         error.message || "Gagal menambah cerita. Periksa koneksi internet Anda."
       );
     }
+  }
+
+  // === BARU: Metode untuk menyimpan cerita ke IndexedDB secara manual (dipanggil dari Presenter) ===
+  async saveStoryToIndexedDB(story) {
+    if (this.indexedDb && story) {
+      try {
+        await this.indexedDb.putStory(story);
+        console.log("Story manually saved to IndexedDB:", story.id);
+        return true;
+      } catch (error) {
+        console.error("Failed to manually save story to IndexedDB:", error);
+        return false;
+      }
+    }
+    return false;
+  }
+
+  // === BARU: Metode untuk menghapus cerita dari IndexedDB secara manual (dipanggil dari Presenter) ===
+  async deleteStoryFromIndexedDB(id) {
+    if (this.indexedDb && id) {
+      try {
+        await this.indexedDb.deleteStory(id);
+        console.log("Story manually deleted from IndexedDB:", id);
+        return true;
+      } catch (error) {
+        console.error("Failed to manually delete story from IndexedDB:", error);
+        return false;
+      }
+    }
+    return false;
   }
 }

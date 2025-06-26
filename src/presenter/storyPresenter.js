@@ -1,4 +1,3 @@
-// src/presenter/storyPresenter.js
 import StoryListView from "../view/storyListView.js";
 import StoryDetailView from "../view/storyDetailView.js";
 import StoryFormView from "../view/storyFormView.js";
@@ -29,6 +28,7 @@ export default class StoryPresenter {
     this.currentView.render(this.mainContainer);
 
     try {
+      // Model sekarang yang akan memutuskan apakah dari API atau IndexedDB
       const stories = await this.model.fetchStories();
       if (stories.length === 0) {
         this.currentView.showStoryLoadError(
@@ -48,11 +48,42 @@ export default class StoryPresenter {
 
   async showStoryDetail(id) {
     this._destroyCurrentView();
-    this.currentView = new StoryDetailView({ story: null });
-    this.currentView.onBack = () => {
-      this.showStoryList();
-      location.hash = "#/stories";
-    };
+    // Di sini kita meneruskan callback onSaveOffline dan onDeleteOffline ke StoryDetailView
+    this.currentView = new StoryDetailView({
+      story: null,
+      onBack: () => {
+        this.showStoryList();
+        location.hash = "#/stories";
+      },
+      // === BARU: Callback untuk menyimpan cerita ke IndexedDB dari aksi pengguna ===
+      onSaveOffline: async (storyData) => {
+        const success = await this.model.saveStoryToIndexedDB(storyData);
+        if (success) {
+          this.currentView.showSuccess(
+            "Cerita berhasil disimpan secara offline!"
+          );
+        } else {
+          this.currentView.showError("Gagal menyimpan cerita secara offline.");
+        }
+        // Setelah menyimpan, perbarui status tombol di View (opsional, tergantung implementasi)
+        this.currentView.updateOfflineStatus(true);
+      },
+      // === BARU: Callback untuk menghapus cerita dari IndexedDB dari aksi pengguna ===
+      onDeleteOffline: async (storyId) => {
+        const success = await this.model.deleteStoryFromIndexedDB(storyId);
+        if (success) {
+          this.currentView.showSuccess(
+            "Cerita berhasil dihapus dari penyimpanan offline!"
+          );
+        } else {
+          this.currentView.showError(
+            "Gagal menghapus cerita dari penyimpanan offline."
+          );
+        }
+        // Setelah menghapus, perbarui status tombol di View
+        this.currentView.updateOfflineStatus(false);
+      },
+    });
     this.currentView.render(this.mainContainer);
 
     try {
@@ -65,6 +96,10 @@ export default class StoryPresenter {
       }
       this.currentView.story = story;
       this.currentView.render(this.mainContainer);
+
+      // Setelah cerita dimuat, cek apakah cerita sudah tersimpan offline untuk update UI View
+      const isSavedOffline = await this.model.indexedDb.getStoryById(story.id);
+      this.currentView.updateOfflineStatus(!!isSavedOffline); // Perbarui status tombol di View
     } catch (error) {
       console.error("Error in showStoryDetail:", error);
       this.showOfflineMessage(
@@ -79,16 +114,13 @@ export default class StoryPresenter {
     this.currentView = new StoryFormView({
       onSubmit: this.handleSubmit.bind(this),
       onCameraClick: this.handleCameraClick.bind(this),
-      onFileChange: this.handleFileChange.bind(this), // onFileChange akan menyetel currentPhotoFile
+      onFileChange: this.handleFileChange.bind(this),
     });
     this.currentView.render(this.mainContainer);
   }
 
   async handleSubmit({ description, latitude, longitude }) {
-    // --- PERUBAHAN UTAMA DI SINI ---
-    // Validasi photoFile harus di Presenter, karena Presenter yang memegang state-nya
     if (!description || !latitude || !longitude) {
-      // Validasi input form dari View
       this.currentView.showError(
         "Deskripsi, Latitude, dan Longitude wajib diisi!"
       );
@@ -96,21 +128,19 @@ export default class StoryPresenter {
     }
 
     if (!this.currentPhotoFile) {
-      // Validasi file foto dari state Presenter
       this.currentView.showError("Foto harus diunggah!");
       return;
     }
-    // --- AKHIR PERUBAHAN ---
 
     try {
       await this.model.addStory({
         description,
         lat: parseFloat(latitude),
         lon: parseFloat(longitude),
-        photoFile: this.currentPhotoFile, // Kirim file dari state Presenter
+        photoFile: this.currentPhotoFile,
       });
       this.currentView.showSuccess("Cerita berhasil dikirim!");
-      this.currentPhotoFile = null; // Reset file foto setelah berhasil dikirim
+      this.currentPhotoFile = null;
       this.showStoryList();
       location.hash = "#/stories";
     } catch (error) {
@@ -137,15 +167,14 @@ export default class StoryPresenter {
     if (!this.currentView) return;
 
     try {
-      // Kompresi gambar dilakukan di View, dan file yang dikompresi dikembalikan ke Presenter
       const compressedFile = await this.currentView.compressImage(
         file,
         800,
         800,
         0.7
       );
-      this.currentPhotoFile = compressedFile; // Set state photo file di Presenter
-      this.currentView.showPreview(compressedFile); // Tampilkan preview di View
+      this.currentPhotoFile = compressedFile;
+      this.currentView.showPreview(compressedFile);
     } catch (error) {
       this.currentView.showError("Gagal memproses gambar: " + error.message);
     }
@@ -179,6 +208,6 @@ export default class StoryPresenter {
       this.currentView.destroy();
     }
     this.currentView = null;
-    this.currentPhotoFile = null; // Reset file foto saat view dihancurkan
+    this.currentPhotoFile = null;
   }
 }

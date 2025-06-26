@@ -1,4 +1,3 @@
-// src/view/storyFormView.js
 import L from "leaflet";
 
 export default class StoryFormView {
@@ -8,11 +7,11 @@ export default class StoryFormView {
     this.onFileChange = onFileChange;
     this.map = null;
     this.marker = null;
-    this.stream = null;
-    this.video = null;
+    this.stream = null; // Untuk stream kamera (MediaStream object)
+    this.video = null; // Untuk elemen video preview kamera
     this.container = null;
-    this._capturePhotoHandler = null; // Tambahkan ini untuk event listener
-    this._beforeUnloadHandler = null; // Tambahkan ini untuk event listener
+    this._capturePhotoHandler = null; // Untuk menyimpan referensi handler klik video
+    this._beforeUnloadHandler = null; // Untuk menyimpan referensi handler beforeunload
   }
 
   getTemplate() {
@@ -61,7 +60,9 @@ export default class StoryFormView {
     container.innerHTML = this.getTemplate();
     this._bindEvents();
     this._initMap();
-    // Bind _beforeUnloadHandler ke instance untuk removeEventListener nanti
+
+    // === PERBAIKAN: Pastikan handler beforeunload hanya terikat sekali dan dapat dilepas ===
+    // Pastikan _beforeUnloadHandler selalu mengikat konteks saat ini
     this._beforeUnloadHandler = this.stopCamera.bind(this);
     window.addEventListener("beforeunload", this._beforeUnloadHandler);
   }
@@ -70,15 +71,13 @@ export default class StoryFormView {
     const form = this.container.querySelector("#storyForm");
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      // Validasi HTML5 bawaan form
       if (!form.checkValidity()) {
         form.reportValidity();
         this.showError("Mohon lengkapi semua kolom yang wajib diisi.");
         return;
       }
 
-      // Hapus pengecekan currentPhotoFile di sini, karena Presenter yang akan memvalidasinya
-      // dan dia yang memegang currentPhotoFile.
+      // Validasi photoFile akan dilakukan di Presenter
 
       const formData = new FormData(form);
       this.clearMessage();
@@ -86,7 +85,6 @@ export default class StoryFormView {
         description: formData.get("description"),
         latitude: formData.get("latitude"),
         longitude: formData.get("longitude"),
-        // photoFile tidak dikirimkan di sini, karena sudah dipegang oleh Presenter
       });
     });
 
@@ -202,8 +200,9 @@ export default class StoryFormView {
       preview.innerHTML = "";
       preview.appendChild(this.video);
 
+      // === PERBAIKAN: Pastikan handler hanya terikat sekali ===
       if (!this._capturePhotoHandler) {
-        this._capturePhotoHandler = () => this._capturePhoto();
+        this._capturePhotoHandler = this._capturePhoto.bind(this); // Bind konteks di sini
       }
       this.video.addEventListener("click", this._capturePhotoHandler);
       this.showSuccess("Ketuk pratinjau kamera untuk mengambil foto.");
@@ -226,11 +225,13 @@ export default class StoryFormView {
 
     canvas.toBlob(
       async (blob) => {
-        this.stopCamera(); // Matikan kamera segera setelah foto diambil
+        // === PERBAIKAN: Mematikan kamera setelah pengambilan foto ===
+        this.stopCamera();
+        // =========================================================
+
         try {
           const compressed = await this.compressImage(blob, 800, 800, 0.7);
-          // PENTING: Kirimkan file foto yang sudah dikompresi langsung ke Presenter
-          this.onFileChange(compressed); // Ini sudah dilakukan sebelumnya
+          this.onFileChange(compressed); // Kirimkan file foto yang sudah dikompresi ke Presenter
           this.showPreview(compressed);
           this.showSuccess("Foto berhasil diambil dan dikompresi.");
         } catch (error) {
@@ -244,14 +245,17 @@ export default class StoryFormView {
 
   stopCamera() {
     if (this.stream) {
-      this.stream.getTracks().forEach((track) => track.stop());
+      this.stream.getTracks().forEach((track) => track.stop()); // Menghentikan semua track media di stream
       this.stream = null;
     }
     if (this.video) {
-      this.video.removeEventListener("click", this._capturePhotoHandler);
+      // === PERBAIKAN: Hapus event listener dengan referensi yang benar ===
+      if (this._capturePhotoHandler) {
+        this.video.removeEventListener("click", this._capturePhotoHandler);
+      }
       this.video.pause();
-      this.video.srcObject = null;
-      this.video.remove();
+      this.video.srcObject = null; // Memutuskan sumber video
+      this.video.remove(); // Menghapus elemen video dari DOM
       this.video = null;
     }
   }
@@ -308,16 +312,19 @@ export default class StoryFormView {
   }
 
   destroy() {
-    this.stopCamera();
+    this.stopCamera(); // Pastikan kamera dihentikan saat view dihancurkan
     if (this.map) {
-      this.map.remove();
+      this.map.remove(); // Hancurkan instance peta Leaflet
       this.map = null;
       this.marker = null;
     }
     if (this.container) {
-      // Hapus event listener global window.beforeunload
-      window.removeEventListener("beforeunload", this._beforeUnloadHandler);
-      this.container.innerHTML = "";
+      // === PERBAIKAN: Hapus event listener global window.beforeunload dengan referensi yang benar ===
+      if (this._beforeUnloadHandler) {
+        window.removeEventListener("beforeunload", this._beforeUnloadHandler);
+      }
+      // =========================================================================================
+      this.container.innerHTML = ""; // Kosongkan container DOM
     }
   }
 }
