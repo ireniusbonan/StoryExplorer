@@ -1,9 +1,7 @@
-// GANTI DENGAN VAPID PUBLIC KEY DARI DICODING API ATAU YANG ANDA GENERATE SENDIRI
-// Contoh: const VAPID_PUBLIC_KEY = "BPm_k-c8d45E7l3d...";
-// Anda dapat menemukan VAPID public key di dokumentasi API Dicoding
-// atau generate sendiri menggunakan web-push library (npm install web-push)
-// web-push generate-vapid-keys --json
-const VAPID_PUBLIC_KEY = "YOUR_VAPID_PUBLIC_KEY_HERE"; // <--- GANTI INI!
+// src/utils/notification-helper.js
+
+const VAPID_PUBLIC_KEY =
+  "BCCs2eonMI-6H2ctvFaWg-UYdDv387Vno_bzUzALpB442r2lCnsHmtrx8biyPi_E-1fSGABK_Qs_GlvPoJJqxbk";
 
 // Fungsi utilitas untuk mengubah string VAPID public key menjadi Uint8Array
 function urlBase64ToUint8Array(base64String) {
@@ -26,7 +24,7 @@ function urlBase64ToUint8Array(base64String) {
 export const requestNotificationPermission = async () => {
   if (!("Notification" in window)) {
     console.warn("Browser tidak mendukung Notification API.");
-    return "denied"; // Atau semacam indikator tidak didukung
+    return "denied";
   }
 
   const permission = await Notification.requestPermission();
@@ -49,7 +47,6 @@ export const subscribePushNotification = async () => {
     const registration = await navigator.serviceWorker.ready;
     let subscription = await registration.pushManager.getSubscription();
 
-    // Jika belum berlangganan, buat langganan baru
     if (!subscription) {
       const convertedVapidKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
       subscription = await registration.pushManager.subscribe({
@@ -58,17 +55,13 @@ export const subscribePushNotification = async () => {
       });
       console.log("Push Subscription baru dibuat:", subscription);
 
-      // KIRIM SUBSCRIPTION KE BACKEND API ANDA
-      // Ini adalah bagian KRUSIAL: Anda harus mengirim 'subscription' ini ke server Anda
-      // Server kemudian akan menyimpan subscription ini untuk mengirim push notifikasi nanti
-      // Contoh (sesuaikan dengan endpoint API Anda):
-      const API_ENDPOINT = "https://story-api.dicoding.dev/v1/subscriptions"; // Contoh endpoint
-      const token = localStorage.getItem("token"); // Asumsikan Anda butuh token untuk otentikasi API
+      const API_ENDPOINT =
+        "https://story-api.dicoding.dev/v1/notifications/subscribe";
+      const token = localStorage.getItem("token");
       if (!token) {
         console.error(
           "Tidak ada token autentikasi untuk mengirim subscription."
         );
-        // Anda mungkin ingin menghapus subscription jika tidak bisa dikirim
         await subscription.unsubscribe();
         return null;
       }
@@ -90,7 +83,6 @@ export const subscribePushNotification = async () => {
           "Gagal mengirim Push Subscription ke backend:",
           errorData.message
         );
-        // Jika gagal mengirim ke backend, mungkin lebih baik unsubscribe agar tidak ada langganan 'zombie'
         await subscription.unsubscribe();
         return null;
       }
@@ -101,7 +93,6 @@ export const subscribePushNotification = async () => {
     return subscription;
   } catch (error) {
     console.error("Gagal berlangganan Push Notification:", error);
-    // Jika user menolak permission atau ada error lain
     if (Notification.permission === "denied") {
       console.warn("Pengguna menolak izin notifikasi.");
     }
@@ -127,7 +118,7 @@ export const unsubscribePushNotification = async () => {
       // OPSI: KIRIM KE BACKEND UNTUK MENGHAPUS SUBSCRIPTION
       // Ini penting jika Anda menyimpan subscription di server
       // Contoh:
-      // const API_ENDPOINT = 'https://story-api.dicoding.dev/v1/unsubscribe';
+      // const API_ENDPOINT = 'https://story-api.dicoding.dev/v1/notifications/unsubscribe'; // Anda bisa membuat endpoint unsubscribe di backend
       // const token = localStorage.getItem('token');
       // if (token) {
       //   await fetch(API_ENDPOINT, {

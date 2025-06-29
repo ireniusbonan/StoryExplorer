@@ -3,26 +3,21 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-  // ✅ GANTI base path untuk GitHub Pages!
   base: "/StoryExplorer/",
-
   server: {
     port: 3000,
     open: true,
     host: true,
   },
-
   build: {
-    outDir: "docs", // ✅ Sesuaikan agar hasil build langsung ke docs/
+    outDir: "docs",
     sourcemap: true,
   },
-
   resolve: {
     alias: {
       "@": "/src",
     },
   },
-
   plugins: [
     VitePWA({
       registerType: "autoUpdate",
@@ -34,7 +29,7 @@ export default defineConfig({
         short_name: "StoryEx",
         description:
           "Aplikasi untuk menjelajahi dan berbagi cerita dengan lokasi.",
-        start_url: "/StoryExplorer/", // ✅ pastikan sesuai base path
+        start_url: "/StoryExplorer/",
         display: "standalone",
         background_color: "#ffffff",
         theme_color: "#004080",
@@ -48,6 +43,12 @@ export default defineConfig({
           {
             src: "/StoryExplorer/icons/icon-512x512.png",
             sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/StoryExplorer/icons/icon-144x144.png",
+            sizes: "144x144",
             type: "image/png",
             purpose: "any",
           },
@@ -66,8 +67,8 @@ export default defineConfig({
         ],
         prefer_related_applications: false,
       },
-
       injectManifest: {
+        // Ini yang krusial
         swSrc: "service-worker.js",
         swDest: "service-worker.js",
         globPatterns: [

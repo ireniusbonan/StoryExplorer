@@ -61,8 +61,8 @@ export default class StoryFormView {
     this._bindEvents();
     this._initMap();
 
-    // === PERBAIKAN: Pastikan handler beforeunload hanya terikat sekali dan dapat dilepas ===
-    // Pastikan _beforeUnloadHandler selalu mengikat konteks saat ini
+    // === PERBAIKAN: Pastikan handler beforeunload terikat sekali dan dapat dilepas ===
+    // Selalu bind ulang handler ini ke instance saat ini untuk memastikan referensi yang benar saat destroy
     this._beforeUnloadHandler = this.stopCamera.bind(this);
     window.addEventListener("beforeunload", this._beforeUnloadHandler);
   }
@@ -77,7 +77,7 @@ export default class StoryFormView {
         return;
       }
 
-      // Validasi photoFile akan dilakukan di Presenter
+      // Validasi photoFile dilakukan di Presenter
 
       const formData = new FormData(form);
       this.clearMessage();
@@ -200,9 +200,9 @@ export default class StoryFormView {
       preview.innerHTML = "";
       preview.appendChild(this.video);
 
-      // === PERBAIKAN: Pastikan handler hanya terikat sekali ===
       if (!this._capturePhotoHandler) {
-        this._capturePhotoHandler = this._capturePhoto.bind(this); // Bind konteks di sini
+        // === PERBAIKAN: Bind _capturePhotoHandler di sini ===
+        this._capturePhotoHandler = this._capturePhoto.bind(this);
       }
       this.video.addEventListener("click", this._capturePhotoHandler);
       this.showSuccess("Ketuk pratinjau kamera untuk mengambil foto.");
@@ -225,7 +225,7 @@ export default class StoryFormView {
 
     canvas.toBlob(
       async (blob) => {
-        // === PERBAIKAN: Mematikan kamera setelah pengambilan foto ===
+        // === PERBAIKAN: Mematikan kamera segera setelah pengambilan foto ===
         this.stopCamera();
         // =========================================================
 
@@ -251,6 +251,7 @@ export default class StoryFormView {
     if (this.video) {
       // === PERBAIKAN: Hapus event listener dengan referensi yang benar ===
       if (this._capturePhotoHandler) {
+        // Hanya hapus jika handler sudah di-bind
         this.video.removeEventListener("click", this._capturePhotoHandler);
       }
       this.video.pause();
@@ -321,6 +322,7 @@ export default class StoryFormView {
     if (this.container) {
       // === PERBAIKAN: Hapus event listener global window.beforeunload dengan referensi yang benar ===
       if (this._beforeUnloadHandler) {
+        // Hanya hapus jika handler sudah di-bind
         window.removeEventListener("beforeunload", this._beforeUnloadHandler);
       }
       // =========================================================================================

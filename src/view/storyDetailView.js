@@ -9,6 +9,10 @@ export default class StoryDetailView {
     this.onSaveOffline = onSaveOffline; // BARU: Callback untuk menyimpan cerita offline
     this.onDeleteOffline = onDeleteOffline; // BARU: Callback untuk menghapus cerita offline
     this.isStorySavedOffline = false; // BARU: State untuk melacak status simpan offline
+
+    // === PERBAIKAN: Bind handler untuk tombol simpan/hapus agar bisa dilepas di destroy() ===
+    this._saveDeleteButtonHandler =
+      this._handleSaveDeleteButtonClick.bind(this);
   }
 
   getTemplate() {
@@ -55,6 +59,8 @@ export default class StoryDetailView {
     container.innerHTML = this.getTemplate();
     this._initMap();
     this._bindEvents();
+    // Setelah render, pastikan status tombol ditampilkan dengan benar
+    // (StoryPresenter akan memanggil updateOfflineStatus setelah data dimuat)
   }
 
   _bindEvents() {
@@ -65,22 +71,24 @@ export default class StoryDetailView {
       });
     }
 
-    // === BARU: Event listener untuk tombol Simpan/Hapus Offline ===
+    // === PERBAIKAN: Menggunakan handler yang terikat untuk tombol simpan/hapus ===
     const saveDeleteBtn =
       this.container.querySelector("#saveOfflineBtn") ||
       this.container.querySelector("#deleteOfflineBtn");
     if (saveDeleteBtn) {
-      saveDeleteBtn.addEventListener("click", () => {
-        if (this.isStorySavedOffline) {
-          // Jika sudah disimpan, panggil callback hapus
-          if (this.onDeleteOffline) this.onDeleteOffline(this.story.id);
-        } else {
-          // Jika belum disimpan, panggil callback simpan
-          if (this.onSaveOffline) this.onSaveOffline(this.story);
-        }
-      });
+      saveDeleteBtn.addEventListener("click", this._saveDeleteButtonHandler);
     }
-    // ==========================================================
+  }
+
+  // === BARU: Handler terpisah untuk event klik tombol simpan/hapus ===
+  _handleSaveDeleteButtonClick() {
+    if (this.isStorySavedOffline) {
+      // Jika sudah disimpan, panggil callback hapus
+      if (this.onDeleteOffline) this.onDeleteOffline(this.story.id);
+    } else {
+      // Jika belum disimpan, panggil callback simpan
+      if (this.onSaveOffline) this.onSaveOffline(this.story);
+    }
   }
 
   _initMap() {
@@ -120,10 +128,19 @@ export default class StoryDetailView {
   // === BARU: Metode untuk memperbarui status tombol simpan/hapus offline ===
   updateOfflineStatus(isSaved) {
     this.isStorySavedOffline = isSaved;
-    // Panggil render ulang untuk memperbarui tombol di template
-    // Ini akan me-render ulang seluruh view, bisa jadi tidak optimal untuk perubahan kecil
-    // Alternatif: hanya update elemen tombol secara langsung tanpa render ulang seluruh template
-    this.render(this.container); // Render ulang untuk memperbarui teks tombol
+    // Perbarui tampilan elemen tombol tanpa me-render ulang seluruh template
+    // Ini lebih efisien daripada memanggil this.render(this.container);
+    const saveDeleteBtn =
+      this.container.querySelector("#saveOfflineBtn") ||
+      this.container.querySelector("#deleteOfflineBtn");
+    if (saveDeleteBtn) {
+      saveDeleteBtn.id = isSaved ? "deleteOfflineBtn" : "saveOfflineBtn";
+      saveDeleteBtn.textContent = isSaved
+        ? "Hapus dari Offline"
+        : "Simpan Offline";
+      saveDeleteBtn.setAttribute("aria-label", saveDeleteBtn.textContent);
+    }
+    this.clearMessage(); // Bersihkan pesan lama saat status diupdate
   }
 
   showError(message) {
@@ -161,16 +178,23 @@ export default class StoryDetailView {
       this.map = null;
     }
     if (this.container) {
-      // Hapus event listener secara spesifik jika diperlukan
+      // === PERBAIKAN: Hapus event listener secara spesifik ===
       const backBtn = this.container.querySelector("#backBtn");
-      if (backBtn) backBtn.removeEventListener("click", this.onBack); // Pastikan onBack tidak null
+      if (backBtn && this.onBack) {
+        // Pastikan onBack tidak null
+        backBtn.removeEventListener("click", this.onBack);
+      }
 
       const saveDeleteBtn =
         this.container.querySelector("#saveOfflineBtn") ||
         this.container.querySelector("#deleteOfflineBtn");
-      if (saveDeleteBtn)
-        saveDeleteBtn.removeEventListener("click", this._bindEvents); // Anda perlu menyimpan referensi fungsi terikat untuk menghapus listener ini.
-      // Solusi sederhana untuk sekarang: bersihkan innerHTML saja.
+      if (saveDeleteBtn && this._saveDeleteButtonHandler) {
+        saveDeleteBtn.removeEventListener(
+          "click",
+          this._saveDeleteButtonHandler
+        );
+      }
+      // =========================================================
       this.container.innerHTML = "";
     }
   }
