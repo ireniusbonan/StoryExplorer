@@ -1,1 +1,52 @@
-if(!self.define){let e,s={};const i=(i,n)=>(i=new URL(i+".js",n).href,s[i]||new Promise(s=>{if("document"in self){const e=document.createElement("script");e.src=i,e.onload=s,document.head.appendChild(e)}else e=i,importScripts(i),s()}).then(()=>{let e=s[i];if(!e)throw new Error(`Module ${i} didn’t register its module`);return e}));self.define=(n,r)=>{const t=e||("document"in self?document.currentScript.src:"")||location.href;if(s[t])return;let o={};const l=e=>i(e,t),d={module:{uri:t},exports:o,require:l};s[t]=Promise.all(n.map(e=>d[e]||l(e))).then(e=>(r(...e),o))}}define(["./workbox-e3490c72"],function(e){"use strict";self.addEventListener("message",e=>{e.data&&"SKIP_WAITING"===e.data.type&&self.skipWaiting()}),e.precacheAndRoute([{url:"assets/index-2eaf373d.js",revision:null},{url:"assets/index-a45e0f55.css",revision:null},{url:"index.html",revision:"e88354ee050967607f503a851fa56b94"},{url:"registerSW.js",revision:"1872c500de691dce40960bb85481de07"},{url:"manifest.webmanifest",revision:"8658df50a0634fa1ed5d8e1652a71a9e"}],{}),e.cleanupOutdatedCaches(),e.registerRoute(new e.NavigationRoute(e.createHandlerBoundToURL("index.html")))});
+if (!self.define) {
+  let e,
+    s = {};
+  const i = (i, n) => (
+    (i = new URL(i + ".js", n).href),
+    s[i] ||
+      new Promise((s) => {
+        if ("document" in self) {
+          const e = document.createElement("script");
+          (e.src = i), (e.onload = s), document.head.appendChild(e);
+        } else (e = i), importScripts(i), s();
+      }).then(() => {
+        let e = s[i];
+        if (!e) throw new Error(`Module ${i} didn’t register its module`);
+        return e;
+      })
+  );
+  self.define = (n, r) => {
+    const t =
+      e ||
+      ("document" in self ? document.currentScript.src : "") ||
+      location.href;
+    if (s[t]) return;
+    let o = {};
+    const c = (e) => i(e, t),
+      l = { module: { uri: t }, exports: o, require: c };
+    s[t] = Promise.all(n.map((e) => l[e] || c(e))).then((e) => (r(...e), o));
+  };
+}
+define(["./workbox-5ffe50d4"], function (e) {
+  "use strict";
+  self.skipWaiting(),
+    e.clientsClaim(),
+    e.precacheAndRoute(
+      [
+        { url: "assets/index-196fe223.js", revision: null },
+        { url: "assets/index-a45e0f55.css", revision: null },
+        { url: "index.html", revision: "16508bf1f79a44e7439a127bc72491c5" },
+        { url: "registerSW.js", revision: "2bcbbfe1c07c5750e3ccb0d92e6c13b9" },
+        {
+          url: "manifest.webmanifest",
+          revision: "7e2fa48ea790f7072333f8c7e21680de",
+        },
+      ],
+      {}
+    ),
+    e.cleanupOutdatedCaches(),
+    e.registerRoute(
+      new e.NavigationRoute(e.createHandlerBoundToURL("index.html"))
+    );
+});
+//# sourceMappingURL=sw.js.map
