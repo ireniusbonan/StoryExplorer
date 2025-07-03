@@ -6,8 +6,9 @@
     <title>Story Explorer</title>
 
     <link rel="manifest" href="data:application/json;base64,ew0KICAibmFtZSI6ICJTdG9yeSBFeHBsb3JlciIsDQogICJzaG9ydF9uYW1lIjogIlN0b3J5RXgiLA0KICAiZGVzY3JpcHRpb24iOiAiQXBsaWthc2kgdW50dWsgbWVuamVsYWphaGkgZGFuIGJlcmJhZ2kgY2VyaXRhIGRlbmdhbiBsb2thc2kuIiwNCiAgInN0YXJ0X3VybCI6ICIvaW5kZXguaHRtbCIsDQogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLA0KICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmZmZmIiwNCiAgInRoZW1lX2NvbG9yIjogIiMwMDQwODAiLA0KICAiaWNvbnMiOiBbDQogICAgew0KICAgICAgInNyYyI6ICIvaWNvbnMvaWNvbi0xOTJ4MTkyLnBuZyIsDQogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsDQogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLA0KICAgICAgInB1cnBvc2UiOiAiYW55Ig0KICAgIH0sDQogICAgew0KICAgICAgInNyYyI6ICIvaWNvbnMvaWNvbi01MTJ4NTEyLnBuZyIsDQogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsDQogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLA0KICAgICAgInB1cnBvc2UiOiAiYW55Ig0KICAgIH0sDQogICAgew0KICAgICAgInNyYyI6ICIvaWNvbnMvaWNvbi1tYXNrYWJsZS0xOTJ4MTkyLnBuZyIsDQogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsDQogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLA0KICAgICAgInB1cnBvc2UiOiAibWFza2FibGUiDQogICAgfSwNCiAgICB7DQogICAgICAic3JjIjogIi9pY29ucy9pY29uLW1hc2thYmxlLTUxMng1MTIucG5nIiwNCiAgICAgICJzaXplcyI6ICI1MTJ4NTEyIiwNCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsDQogICAgICAicHVycG9zZSI6ICJtYXNrYWJsZSINCiAgICB9DQogIF0sDQogICJwcmVmZXJfcmVsYXRlZF9hcHBsaWNhdGlvbnMiOiBmYWxzZQ0KfQ0K" />
-
+    <link rel="manifest" href="/StoryExplorer/manifest.json" />
     
+
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -16,7 +17,7 @@
       src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"
       defer
     ></script>
-    <script type="module" crossorigin src="/StoryExplorer/assets/index-52d34737.js"></script>
+    <script type="module" crossorigin src="/StoryExplorer/assets/index-df3c7642.js"></script>
     <link rel="stylesheet" href="/StoryExplorer/assets/index-f91b7213.css">
   <link rel="manifest" href="/StoryExplorer/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/StoryExplorer/registerSW.js"></script></head>
 
@@ -37,7 +38,7 @@
 
         <!-- Tombol PWA (notifikasi & install) -->
         <div class="action-buttons">
-          <button id="subscribeBtn" aria-label="Aktifkan Notifikasi">
+          <button id="subscribeBtn" aria-label="Toggle Notifikasi">
             🔔 Notifikasi
           </button>
           <button id="installBtn" hidden aria-label="Install Aplikasi">
@@ -67,7 +68,7 @@
       </div>
     </footer>
 
-    <!-- Script utama -->
+    <!-- Script utama SPA -->
     
 
     <!-- Leaflet JS -->
@@ -78,7 +79,7 @@
       defer
     ></script>
 
-    <!-- Script PWA & Notifikasi -->
+    <!-- Script PWA: Install & Push Notification Toggle -->
     
   </body>
 </html>
