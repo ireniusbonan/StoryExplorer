@@ -15,13 +15,13 @@ export default defineConfig({
         name: "Story Explorer",
         short_name: "StoryApp",
         description: "Aplikasi eksplorasi cerita berbasis lokasi",
-        start_url: "/StoryExplorer/", // ✅ Sudah benar!
+        start_url: "/StoryExplorer/",
         display: "standalone",
         background_color: "#ffffff",
         theme_color: "#42a5f5",
         icons: [
           {
-            src: "/StoryExplorer/icons/icon-192x192.png", // ✅ Tambahkan prefix BASE
+            src: "/StoryExplorer/icons/icon-192x192.png",
             sizes: "192x192",
             type: "image/png",
             purpose: "any",
@@ -51,6 +51,10 @@ export default defineConfig({
             purpose: "maskable",
           },
         ],
+      },
+      devOptions: {
+        enabled: true,
+        type: "module",
       },
     }),
   ],
