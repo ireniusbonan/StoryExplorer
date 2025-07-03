@@ -15,38 +15,42 @@ export default defineConfig({
         name: "Story Explorer",
         short_name: "StoryApp",
         description: "Aplikasi eksplorasi cerita berbasis lokasi",
-        start_url: "/StoryExplorer/",
+        start_url: "/StoryExplorer/", // ✅ Sudah benar!
         display: "standalone",
         background_color: "#ffffff",
         theme_color: "#42a5f5",
         icons: [
           {
-            src: "icons/icon-192x192.png",
+            src: "/StoryExplorer/icons/icon-192x192.png", // ✅ Tambahkan prefix BASE
             sizes: "192x192",
             type: "image/png",
+            purpose: "any",
           },
           {
-            src: "icons/icon-512x512.png",
+            src: "/StoryExplorer/icons/icon-512x512.png",
             sizes: "512x512",
             type: "image/png",
+            purpose: "any",
           },
           {
-            src: "icons/icon-maskable-192x192.png",
+            src: "/StoryExplorer/icons/icon-144x144.png",
+            sizes: "144x144",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/StoryExplorer/icons/icon-maskable-192x192.png",
             sizes: "192x192",
             type: "image/png",
             purpose: "maskable",
           },
           {
-            src: "icons/icon-maskable-512x512.png",
+            src: "/StoryExplorer/icons/icon-maskable-512x512.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
           },
         ],
-      },
-      devOptions: {
-        enabled: true,
-        type: "module",
       },
     }),
   ],
