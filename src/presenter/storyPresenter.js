@@ -2,33 +2,26 @@ import StoryListView from "../view/storyListView.js";
 import StoryDetailView from "../view/storyDetailView.js";
 import StoryFormView from "../view/storyFormView.js";
 import OfflineView from "../view/offlineView.js";
+import { showNotification } from "../utils/notify.js";
 
 export default class StoryPresenter {
-  /**
-   * @param {object} storyModel - Instance model cerita (yang sekarang bisa berinteraksi dengan IndexedDB)
-   * @param {HTMLElement} mainContainer - Container utama untuk render View
-   */
   constructor(storyModel, mainContainer) {
     this.model = storyModel;
     this.mainContainer =
       mainContainer || document.getElementById("main-content");
-    this.currentPhotoFile = null; // Ini adalah tempat state file foto disimpan
+    this.currentPhotoFile = null;
     this.currentView = null;
-
     this.navigateTo = this.navigateTo.bind(this);
   }
 
   async showStoryList() {
     this._destroyCurrentView();
     this.currentView = new StoryListView({
-      onDetail: (id) => {
-        this.showStoryDetail(id);
-      },
+      onDetail: (id) => this.showStoryDetail(id),
     });
     this.currentView.render(this.mainContainer);
 
     try {
-      // Model sekarang yang akan memutuskan apakah dari API atau IndexedDB
       const stories = await this.model.fetchStories();
       if (stories.length === 0) {
         this.currentView.showStoryLoadError(
@@ -48,15 +41,12 @@ export default class StoryPresenter {
 
   async showStoryDetail(id) {
     this._destroyCurrentView();
-    // Di sini kita meneruskan callback onSaveOffline dan onDeleteOffline ke StoryDetailView
     this.currentView = new StoryDetailView({
       story: null,
       onBack: () => {
         this.showStoryList();
         location.hash = "#/stories";
       },
-      // === KOREKSI & VERIFIKASI: Callback untuk menyimpan cerita ke IndexedDB dari aksi pengguna ===
-      // Pastikan this.model.saveStoryToIndexedDB ada (sudah ditambahkan di StoryModel)
       onSaveOffline: async (storyData) => {
         const success = await this.model.saveStoryToIndexedDB(storyData);
         if (success) {
@@ -66,10 +56,8 @@ export default class StoryPresenter {
         } else {
           this.currentView.showError("Gagal menyimpan cerita secara offline.");
         }
-        this.currentView.updateOfflineStatus(success); // Perbarui status tombol di View
+        this.currentView.updateOfflineStatus(success);
       },
-      // === KOREKSI & VERIFIKASI: Callback untuk menghapus cerita dari IndexedDB dari aksi pengguna ===
-      // Pastikan this.model.deleteStoryFromIndexedDB ada (sudah ditambahkan di StoryModel)
       onDeleteOffline: async (storyId) => {
         const success = await this.model.deleteStoryFromIndexedDB(storyId);
         if (success) {
@@ -81,7 +69,7 @@ export default class StoryPresenter {
             "Gagal menghapus cerita dari penyimpanan offline."
           );
         }
-        this.currentView.updateOfflineStatus(!success); // Perbarui status tombol di View (false jika sukses dihapus)
+        this.currentView.updateOfflineStatus(!success);
       },
     });
     this.currentView.render(this.mainContainer);
@@ -96,11 +84,8 @@ export default class StoryPresenter {
       }
       this.currentView.story = story;
       this.currentView.render(this.mainContainer);
-
-      // Setelah cerita dimuat, cek apakah cerita sudah tersimpan offline untuk update UI View
-      // Pastikan this.model.indexedDb.getStoryById ada dan berfungsi
       const isSavedOffline = await this.model.indexedDb.getStoryById(story.id);
-      this.currentView.updateOfflineStatus(!!isSavedOffline); // Perbarui status tombol di View
+      this.currentView.updateOfflineStatus(!!isSavedOffline);
     } catch (error) {
       console.error("Error in showStoryDetail:", error);
       this.showOfflineMessage(
@@ -140,22 +125,22 @@ export default class StoryPresenter {
         lon: parseFloat(longitude),
         photoFile: this.currentPhotoFile,
       });
+
       this.currentView.showSuccess("Cerita berhasil dikirim!");
       this.currentPhotoFile = null;
 
-      // === KOREKSI KAMERA: Matikan kamera secara eksplisit di Presenter sebelum navigasi ===
-      // Reviewer melaporkan kamera masih aktif setelah save dan redirect.
-      // Ini adalah tempat terbaik untuk memastikan kamera mati sebelum View Form dihancurkan.
       if (
         this.currentView &&
         typeof this.currentView.stopCamera === "function"
       ) {
         this.currentView.stopCamera();
-        console.log("Kamera dimatikan secara eksplisit setelah submit.");
       }
-      // ==================================================================================
 
-      this.showStoryList(); // Ini akan memicu destroy() secara tidak langsung juga
+      showNotification("Cerita Berhasil Ditambahkan!", {
+        body: "Terima kasih telah berbagi cerita Anda 🎉",
+      });
+
+      this.showStoryList();
       location.hash = "#/stories";
     } catch (error) {
       console.error("Error submitting story:", error);
@@ -213,19 +198,14 @@ export default class StoryPresenter {
 
   showOfflineMessage(message) {
     this._destroyCurrentView();
-    this.currentView = new OfflineView({ message: message });
+    this.currentView = new OfflineView({ message });
     this.currentView.render(this.mainContainer);
   }
 
   _destroyCurrentView() {
-    // === KOREKSI KAMERA: Pastikan kamera mati juga saat View dihancurkan secara umum ===
-    // Ini adalah fallback tambahan jika stopCamera() di handleSubmit terlewatkan
     if (this.currentView && typeof this.currentView.stopCamera === "function") {
       this.currentView.stopCamera();
-      console.log("Kamera dimatikan via _destroyCurrentView.");
     }
-    // ==================================================================================
-
     if (this.currentView && this.currentView.destroy) {
       this.currentView.destroy();
     }

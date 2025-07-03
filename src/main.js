@@ -1,37 +1,38 @@
+// Impor semua modul yang dibutuhkan
 import StoryPresenter from "./presenter/storyPresenter.js";
 import AuthPresenter from "./presenter/authPresenter.js";
 import AuthModel from "./model/authModel.js";
 import StoryModel from "./model/storyModel.js";
-import IndexedDbModel from "./model/indexedDbModel.js"; // Impor model IndexedDB baru
+import IndexedDbModel from "./model/indexedDbModel.js";
 import Router from "./router.js";
-import swRegister from "./utils/sw-register.js"; // Impor utilitas pendaftaran SW
+import swRegister from "./utils/sw-register.js";
+import { showNotification } from "./utils/notify.js"; // Notifikasi
 import "./styles.css";
 
+// DOMContentLoaded = tunggu DOM siap
 document.addEventListener("DOMContentLoaded", async () => {
   const mainContainer = document.getElementById("main-content");
 
-  // Inisialisasi IndexedDB Model terlebih dahulu
+  // ✅ 1. Inisialisasi IndexedDB
   const indexedDbModel = new IndexedDbModel();
-  // Pastikan IndexedDB siap sebelum digunakan oleh StoryModel
   await indexedDbModel._initDb();
-  console.log("IndexedDB initialized in main.js");
+  console.log("✅ IndexedDB initialized");
 
+  // ✅ 2. Inisialisasi Model dan Presenter
   const authModel = new AuthModel();
-  // Injeksi indexedDbModel ke StoryModel agar StoryModel bisa decide fallback ke IndexedDB
   const storyModel = new StoryModel(indexedDbModel);
-
-  // Inject model ke presenter
   const storyPresenter = new StoryPresenter(storyModel, mainContainer);
   const authPresenter = new AuthPresenter(authModel, mainContainer);
 
+  // ✅ 3. Inisialisasi Router SPA
   const router = new Router(storyPresenter, authPresenter);
   router.init();
 
-  // Daftarkan Service Worker
-  await swRegister(); // Panggil fungsi pendaftaran Service Worker
-  console.log("Service Worker registration initiated in main.js");
+  // ✅ 4. Register Service Worker
+  await swRegister();
+  console.log("✅ Service Worker registered");
 
-  // Event listener tombol logout agar langsung memanggil logout tanpa reload
+  // ✅ 5. Setup Logout (tanpa reload)
   const logoutLink = document.getElementById("logout-link");
   if (logoutLink) {
     logoutLink.addEventListener("click", (e) => {
@@ -40,17 +41,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Skip link untuk aksesibilitas keyboard
-  // Pastikan script ini hanya ada di sini, tidak di index.html
+  // ✅ 6. Skip to content (Aksesibilitas)
   const skipLink = document.querySelector(".skip-link");
   if (skipLink) {
-    // Tambahkan pengecekan if(skipLink)
-    skipLink.addEventListener("click", (event) => {
-      event.preventDefault();
+    skipLink.addEventListener("click", (e) => {
+      e.preventDefault();
       skipLink.blur();
       mainContainer.setAttribute("tabindex", "-1");
       mainContainer.focus();
       mainContainer.scrollIntoView({ behavior: "smooth" });
     });
+  }
+
+  // ✅ 7. Minta izin notifikasi jika belum
+  if ("Notification" in window && Notification.permission === "default") {
+    try {
+      const permission = await Notification.requestPermission();
+      console.log("🔔 Notification permission:", permission);
+      if (permission === "granted") {
+        showNotification("Notifikasi diaktifkan", {
+          body: "Anda akan menerima pemberitahuan.",
+          icon: "/icons/icon-192x192.png",
+        });
+      }
+    } catch (err) {
+      console.warn("⚠️ Gagal meminta izin notifikasi:", err);
+    }
   }
 });

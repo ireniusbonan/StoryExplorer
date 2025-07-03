@@ -6,7 +6,6 @@
     <title>Story Explorer</title>
 
     <link rel="manifest" href="/manifest.json" />
-
     <link rel="stylesheet" href="/src/styles.css" />
     <link
       rel="stylesheet"
@@ -19,55 +18,133 @@
   </head>
 
   <body>
-    <a href="#main-content" class="skip-link">Skip to content</a>
+    <!-- Skip to content (aksesibilitas) -->
+    <a href="#main-content" class="skip-link">Lewati ke konten utama</a>
 
+    <!-- Header & Navbar -->
     <header>
-      <nav class="navbar" role="navigation" aria-label="Main navigation">
-        <div class="logo">StoryExplorer</div>
+      <nav class="navbar" role="navigation" aria-label="Navigasi utama">
+        <div class="logo" aria-label="Logo Aplikasi">StoryExplorer</div>
+
         <ul class="nav-links">
           <li><a href="#/stories" aria-current="page">Cerita</a></li>
           <li><a href="#/add">+ Tambah Cerita</a></li>
           <li><a href="#/logout" id="logout-link">Keluar</a></li>
         </ul>
+
+        <!-- Tombol PWA (notifikasi & install) -->
+        <div class="action-buttons">
+          <button id="subscribeBtn" aria-label="Toggle Notifikasi">
+            🔔 Notifikasi
+          </button>
+          <button id="installBtn" hidden aria-label="Install Aplikasi">
+            ⬇️ Install
+          </button>
+        </div>
       </nav>
     </header>
 
+    <!-- Konten Utama SPA -->
     <main id="main-content" tabindex="-1" role="main"></main>
 
+    <!-- Footer -->
     <footer class="site-footer" role="contentinfo">
       <div class="footer-content">
         <p>© 2025 Irenius Bonan. All rights reserved.</p>
         <p>Aplikasi Web Belajar Pengembangan Web Intermediate</p>
         <div class="social-links">
-          |
           <a
             href="https://www.linkedin.com/in/irenius-bonan-3aa93a2a3/"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="LinkedIn Irenius Bonan"
+            aria-label="Profil LinkedIn Irenius Bonan"
             >LinkedIn</a
           >
         </div>
       </div>
     </footer>
 
+    <!-- Script utama SPA -->
     <script type="module" src="/src/main.js"></script>
+
+    <!-- Leaflet JS -->
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-o9N1j0r6J1v04MD9lOa57u9kV+ZkVlUykZ+DXkGVcNQ="
       crossorigin=""
       defer
     ></script>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
+    <!-- Script PWA: Install & Push Notification Toggle -->
+    <script type="module">
+      import {
+        subscribeUserToPush,
+        unsubscribeUserFromPush,
+        isUserSubscribed,
+      } from "/src/utils/pushSubscription.js";
+
+      let deferredPrompt;
+      const installBtn = document.getElementById("installBtn");
+
+      // Install Prompt
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.hidden = false;
+      });
+
+      installBtn?.addEventListener("click", async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log("Install outcome:", outcome);
+          deferredPrompt = null;
+          installBtn.hidden = true;
+        }
+      });
+
+      document.addEventListener("DOMContentLoaded", async () => {
         const skipLink = document.querySelector(".skip-link");
         const mainContent = document.getElementById("main-content");
-        skipLink.addEventListener("click", (event) => {
-          event.preventDefault();
-          skipLink.blur();
-          mainContent.setAttribute("tabindex", "-1");
-          mainContent.focus();
-          mainContent.scrollIntoView({ behavior: "smooth" });
+
+        // Skip ke konten utama
+        skipLink?.addEventListener("click", (e) => {
+          e.preventDefault();
+          mainContent?.setAttribute("tabindex", "-1");
+          mainContent?.focus();
+          mainContent?.scrollIntoView({ behavior: "smooth" });
+        });
+
+        // Toggle Notifikasi Push
+        const notifBtn = document.getElementById("subscribeBtn");
+
+        // Ganti label tombol sesuai status awal
+        if (await isUserSubscribed()) {
+          notifBtn.textContent = "🔕 Nonaktifkan";
+        } else {
+          notifBtn.textContent = "🔔 Notifikasi";
+        }
+
+        notifBtn?.addEventListener("click", async () => {
+          if (!("Notification" in window)) {
+            alert("Browser tidak mendukung notifikasi.");
+            return;
+          }
+
+          const permission = await Notification.requestPermission();
+          if (permission !== "granted") {
+            alert("Izinkan notifikasi untuk mengaktifkan.");
+            return;
+          }
+
+          const isSubscribed = await isUserSubscribed();
+          if (isSubscribed) {
+            await unsubscribeUserFromPush();
+            notifBtn.textContent = "🔔 Notifikasi";
+          } else {
+            await subscribeUserToPush();
+            notifBtn.textContent = "🔕 Nonaktifkan";
+          }
         });
       });
     </script>
