@@ -2,7 +2,7 @@
   "name": "Story Explorer",
   "short_name": "StoryEx",
   "description": "Aplikasi untuk menjelajahi dan berbagi cerita dengan lokasi.",
-  "start_url": "/index.html",
+  "start_url": "/StoryExplorer/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#004080",
