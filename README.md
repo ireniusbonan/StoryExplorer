@@ -15,6 +15,6 @@ Story Explorer adalah aplikasi web berbasis **Single Page Application (SPA)** ya
 
 ## 📦 Instalasi & Menjalankan Aplikasi
 
-npm install
-npm run build
-npm run dev
+- npm install
+- npm run build
+- npm run dev
