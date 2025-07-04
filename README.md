@@ -1,15 +1,20 @@
-StoryExplorer adalah aplikasi web interaktif yang memungkinkan pengguna untuk berbagi cerita dengan mudah dan menarik. Pengguna dapat menambahkan cerita lengkap dengan foto dan menandai lokasi cerita tersebut pada peta interaktif. Aplikasi ini dibuat sebagai proyek pembelajaran Pengembangan Web Intermediate oleh Irenius Bonan.
+# 🌍 Story Explorer
 
-Aplikasi ini memiliki fitur utama sebagai berikut:
+Story Explorer adalah aplikasi web berbasis **Single Page Application (SPA)** yang memungkinkan pengguna untuk mengeksplorasi dan membagikan cerita berdasarkan lokasi geografis. Aplikasi ini dibuat sebagai bagian dari pembelajaran Intermediate Front-End Developer di Dicoding.
 
-Autentikasi Pengguna: Pengguna dapat melakukan login dan registrasi untuk mengakses fitur aplikasi secara aman.
+## 🚀 Fitur Unggulan
 
-Daftar Cerita: Menampilkan kumpulan cerita yang telah diunggah oleh pengguna lain lengkap dengan foto dan tanggal pembuatan.
+- SPA dengan **Hash Routing** dan **View Transition API**
+- Form tambah cerita dengan **kamera** dan **lokasi peta**
+- Menampilkan cerita dari API dengan **gambar**, **deskripsi**, dan **koordinat**
+- **PWA**: Installable + offline ready (via Service Worker dan Manifest)
+- Push **Notification** toggle (aktif/nonaktif)
+- Aksesibilitas sesuai standar **WCAG**
 
-Tambah Cerita: Pengguna dapat menambahkan cerita baru dengan mengisi deskripsi, mengunggah foto (dari file atau kamera perangkat), serta memilih lokasi cerita dengan klik pada peta Leaflet yang interaktif.
+---
 
-Detail Cerita: Setiap cerita dapat dilihat secara detail, termasuk deskripsi lengkap, foto, serta peta yang menunjukkan lokasi cerita dengan koordinat latitude dan longitude.
+## 📦 Instalasi & Menjalankan Aplikasi
 
-Navigasi Mudah: Menu navigasi yang responsif memudahkan pengguna berpindah antar halaman seperti daftar cerita, tambah cerita, tentang aplikasi, dan logout.
-
-Halaman Tentang: Menampilkan informasi tentang pembuat aplikasi dan tujuan pembuatan aplikasi ini sebagai sarana belajar pengembangan web.
+npm install
+npm run build
+npm run dev

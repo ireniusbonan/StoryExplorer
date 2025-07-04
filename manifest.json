@@ -1,6 +1,6 @@
 {
   "name": "Story Explorer",
-  "short_name": "StoryEx",
+  "short_name": "StoryExplorer",
   "description": "Aplikasi untuk menjelajahi dan berbagi cerita dengan lokasi.",
   "start_url": "/StoryExplorer/",
   "display": "standalone",

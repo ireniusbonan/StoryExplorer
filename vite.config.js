@@ -3,7 +3,7 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-  base: "/StoryExplorer/",
+  base: "/StoryExplorer/", // untuk GitHub Pages
   plugins: [
     VitePWA({
       registerType: "autoUpdate",
@@ -13,39 +13,36 @@ export default defineConfig({
       injectRegister: "auto",
       manifest: {
         name: "Story Explorer",
-        short_name: "StoryApp",
-        description: "Aplikasi eksplorasi cerita berbasis lokasi",
+        short_name: "StoryExplorer",
+        description: "Aplikasi eksplorasi cerita berbasis lokasi.",
         start_url: "/StoryExplorer/",
         display: "standalone",
         background_color: "#ffffff",
         theme_color: "#42a5f5",
         icons: [
           {
-            src: "/StoryExplorer/icons/icon-192x192.png",
+            src: "icons/icon-192x192.png",
             sizes: "192x192",
             type: "image/png",
-            purpose: "any",
           },
           {
-            src: "/StoryExplorer/icons/icon-512x512.png",
+            src: "icons/icon-512x512.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "any",
           },
           {
-            src: "/StoryExplorer/icons/icon-144x144.png",
+            src: "icons/icon-144x144.png",
             sizes: "144x144",
             type: "image/png",
-            purpose: "any",
           },
           {
-            src: "/StoryExplorer/icons/icon-maskable-192x192.png",
+            src: "icons/icon-maskable-192x192.png",
             sizes: "192x192",
             type: "image/png",
             purpose: "maskable",
           },
           {
-            src: "/StoryExplorer/icons/icon-maskable-512x512.png",
+            src: "icons/icon-maskable-512x512.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
