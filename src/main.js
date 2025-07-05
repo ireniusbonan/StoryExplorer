@@ -5,11 +5,11 @@ import AuthModel from "./model/authModel.js";
 import StoryModel from "./model/storyModel.js";
 import IndexedDbModel from "./model/indexedDbModel.js";
 import Router from "./router.js";
-import swRegister from "./utils/sw-register.js";
 import { showNotification } from "./utils/notify.js"; // Notifikasi
 import "./styles.css";
 
-// DOMContentLoaded = tunggu DOM siap
+// ✅ Tidak perlu import "./utils/sw-register.js" lagi
+
 document.addEventListener("DOMContentLoaded", async () => {
   const mainContainer = document.getElementById("main-content");
 
@@ -28,9 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const router = new Router(storyPresenter, authPresenter);
   router.init();
 
-  // ✅ 4. Register Service Worker
-  await swRegister();
-  console.log("✅ Service Worker registered");
+  // ✅ 4. (DIHAPUS) Tidak perlu lagi swRegister();
 
   // ✅ 5. Setup Logout (tanpa reload)
   const logoutLink = document.getElementById("logout-link");

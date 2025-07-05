@@ -1,0 +1,36 @@
+{
+  "name": "Story Explorer",
+  "short_name": "StoryExplorer",
+  "description": "Aplikasi untuk menjelajahi dan berbagi cerita dengan lokasi.",
+  "start_url": "/StoryExplorer/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#004080",
+  "icons": [
+    {
+      "src": "/StoryExplorer/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/StoryExplorer/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/StoryExplorer/icons/icon-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/StoryExplorer/icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "prefer_related_applications": false
+}

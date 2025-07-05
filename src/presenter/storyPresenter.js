@@ -16,9 +16,30 @@ export default class StoryPresenter {
 
   async showStoryList() {
     this._destroyCurrentView();
+
     this.currentView = new StoryListView({
       onDetail: (id) => this.showStoryDetail(id),
+      onSave: async (id) => {
+        try {
+          const story = await this.model.fetchStoryById(id);
+          if (!story) {
+            alert("Cerita tidak ditemukan.");
+            return;
+          }
+
+          const success = await this.model.saveStoryToIndexedDB(story);
+          if (success) {
+            alert("✅ Cerita berhasil disimpan untuk dibaca offline!");
+          } else {
+            alert("❌ Gagal menyimpan cerita.");
+          }
+        } catch (error) {
+          console.error("Gagal menyimpan cerita offline:", error);
+          alert("❌ Gagal menyimpan karena masalah jaringan.");
+        }
+      },
     });
+
     this.currentView.render(this.mainContainer);
 
     try {
@@ -41,6 +62,7 @@ export default class StoryPresenter {
 
   async showStoryDetail(id) {
     this._destroyCurrentView();
+
     this.currentView = new StoryDetailView({
       story: null,
       onBack: () => {
@@ -72,6 +94,7 @@ export default class StoryPresenter {
         this.currentView.updateOfflineStatus(!success);
       },
     });
+
     this.currentView.render(this.mainContainer);
 
     try {
@@ -82,8 +105,10 @@ export default class StoryPresenter {
         );
         return;
       }
+
       this.currentView.story = story;
       this.currentView.render(this.mainContainer);
+
       const isSavedOffline = await this.model.indexedDb.getStoryById(story.id);
       this.currentView.updateOfflineStatus(!!isSavedOffline);
     } catch (error) {
@@ -97,11 +122,13 @@ export default class StoryPresenter {
 
   showAddStoryForm() {
     this._destroyCurrentView();
+
     this.currentView = new StoryFormView({
       onSubmit: this.handleSubmit.bind(this),
       onCameraClick: this.handleCameraClick.bind(this),
       onFileChange: this.handleFileChange.bind(this),
     });
+
     this.currentView.render(this.mainContainer);
   }
 

@@ -1,19 +1,17 @@
-const swRegister = async () => {
-  if ("serviceWorker" in navigator) {
-    try {
-      const registration = await navigator.serviceWorker.register(
-        "/service-worker.js"
-      );
-      console.log("Service Worker registered:", registration);
-      return registration;
-    } catch (error) {
-      console.error("Service Worker registration failed:", error);
-      return null;
-    }
-  } else {
-    console.warn("Service Worker not supported in this browser.");
-    return null;
-  }
-};
+// // src/utils/sw-register.js
 
-export default swRegister;
+// export default async function swRegister() {
+//   if ("serviceWorker" in navigator) {
+//     try {
+//       // Pendaftaran ini HANYA BERLAKU jika kamu pakai injectManifest
+//       const registration = await navigator.serviceWorker.register(
+//         "/StoryExplorer/registerSW.js"
+//       );
+//       console.log("✅ Service Worker berhasil didaftarkan:", registration);
+//     } catch (error) {
+//       console.error("❌ Gagal mendaftarkan Service Worker:", error);
+//     }
+//   } else {
+//     console.warn("❌ Browser tidak mendukung Service Worker.");
+//   }
+// }

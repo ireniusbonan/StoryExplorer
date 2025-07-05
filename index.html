@@ -3,26 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#007bff" />
+    <meta name="description" content="Aplikasi SPA untuk berbagi cerita." />
+
     <title>Story Explorer</title>
 
-    <link rel="manifest" href="/StoryExplorer/manifest.json" />
+    <!-- Favicon dan Icons -->
+    <link rel="icon" href="/icons/icon-192x192.png" />
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+    <link rel="manifest" href="/manifest.json" />
 
-    <link rel="stylesheet" href="/src/styles.css" />
+    <!-- Leaflet CSS -->
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"
-      defer
-    ></script>
+
+    <!-- Styles lokal -->
+    <link rel="stylesheet" href="/src/styles.css" />
   </head>
 
   <body>
-    <!-- Skip to content (aksesibilitas) -->
+    <!-- Skip to main content (aksesibilitas) -->
     <a href="#main-content" class="skip-link">Lewati ke konten utama</a>
 
-    <!-- Header & Navbar -->
+    <!-- Header -->
     <header>
       <nav class="navbar" role="navigation" aria-label="Navigasi utama">
         <div class="logo" aria-label="Logo Aplikasi">StoryExplorer</div>
@@ -30,10 +35,10 @@
         <ul class="nav-links">
           <li><a href="#/stories" aria-current="page">Cerita</a></li>
           <li><a href="#/add">+ Tambah Cerita</a></li>
+          <li><a href="#/saved">📥 Cerita Tersimpan</a></li>
           <li><a href="#/logout" id="logout-link">Keluar</a></li>
         </ul>
 
-        <!-- Tombol PWA (notifikasi & install) -->
         <div class="action-buttons">
           <button id="subscribeBtn" aria-label="Toggle Notifikasi">
             🔔 Notifikasi
@@ -45,7 +50,7 @@
       </nav>
     </header>
 
-    <!-- Konten Utama SPA -->
+    <!-- Konten utama -->
     <main id="main-content" tabindex="-1" role="main"></main>
 
     <!-- Footer -->
@@ -65,18 +70,17 @@
       </div>
     </footer>
 
-    <!-- Script utama SPA -->
+    <!-- Entry point utama -->
     <script type="module" src="/src/main.js"></script>
 
-    <!-- Leaflet JS -->
+    <!-- Leaflet JS tanpa integrity (biar tidak error build) -->
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-      integrity="sha256-o9N1j0r6J1v04MD9lOa57u9kV+ZkVlUykZ+DXkGVcNQ="
       crossorigin=""
       defer
     ></script>
 
-    <!-- Script PWA: Install & Push Notification Toggle -->
+    <!-- Install Prompt & Notifikasi -->
     <script type="module">
       import {
         subscribeUserToPush,
@@ -87,7 +91,6 @@
       let deferredPrompt;
       const installBtn = document.getElementById("installBtn");
 
-      // Install Prompt
       window.addEventListener("beforeinstallprompt", (e) => {
         e.preventDefault();
         deferredPrompt = e;
@@ -108,7 +111,6 @@
         const skipLink = document.querySelector(".skip-link");
         const mainContent = document.getElementById("main-content");
 
-        // Skip ke konten utama
         skipLink?.addEventListener("click", (e) => {
           e.preventDefault();
           mainContent?.setAttribute("tabindex", "-1");
@@ -116,10 +118,8 @@
           mainContent?.scrollIntoView({ behavior: "smooth" });
         });
 
-        // Toggle Notifikasi Push
         const notifBtn = document.getElementById("subscribeBtn");
 
-        // Ganti label tombol sesuai status awal
         if (await isUserSubscribed()) {
           notifBtn.textContent = "🔕 Nonaktifkan";
         } else {

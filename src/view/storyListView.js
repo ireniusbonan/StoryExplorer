@@ -1,13 +1,13 @@
 export default class StoryListView {
-  constructor({ stories = [], onDetail }) {
+  constructor({ stories = [], onDetail, onSave }) {
     this.stories = stories;
     this.onDetail = onDetail;
+    this.onSave = onSave;
     this.container = null;
-    this._handleClick = this._handleClick.bind(this); // Pastikan event handler terikat ke instance
+    this._handleClick = this._handleClick.bind(this);
   }
 
   getTemplate() {
-    // Pesan untuk saat tidak ada cerita
     if (!this.stories || this.stories.length === 0) {
       return `
         <section aria-live="polite" aria-label="Daftar cerita kosong">
@@ -18,7 +18,6 @@ export default class StoryListView {
       `;
     }
 
-    // Template untuk menampilkan daftar cerita
     return `
       <section aria-label="Daftar cerita" role="main">
         <h2>Daftar Cerita</h2>
@@ -32,30 +31,43 @@ export default class StoryListView {
                 alt="Foto cerita dari ${story.name || "Anonim"}" 
                 style="max-width:100%; border-radius:12px; margin-bottom:0.5rem; aspect-ratio: 16/9; object-fit: cover;" 
               />
-              <h3 style="margin-top:0.5rem; margin-bottom:0.25rem;">${
-                story.name || "Anonim"
-              }</h3>
+              <h3 style="margin-top:0.5rem; margin-bottom:0.25rem;">
+                ${story.name || "Anonim"}
+              </h3>
               <p style="font-size:0.9rem; color:#666; margin-bottom:0.5rem;">
                 ${story.description.substring(0, 100)}${
                 story.description.length > 100 ? "..." : ""
               }
               </p>
-              <small style="display:block; margin-bottom:1rem; color:#888;">${new Date(
-                story.createdAt
-              ).toLocaleDateString("id-ID", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}</small>
-              <button 
-                class="detail-btn btn-primary-small" 
-                data-id="${story.id}" 
-                aria-label="Lihat detail cerita ${story.name || "Anonim"}"
-                type="button"
-                style="padding: 0.5rem 1rem; font-size: 0.9rem; border-radius: 8px; background-color: #007bff; color: white; border: none; cursor: pointer; transition: background-color 0.3s ease;"
-              >
-                Lihat Detail
-              </button>
+              <small style="display:block; margin-bottom:1rem; color:#888;">
+                ${new Date(story.createdAt).toLocaleDateString("id-ID", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </small>
+
+              <div style="display: flex; gap: 0.5rem;">
+                <button 
+                  class="detail-btn btn-primary-small" 
+                  data-id="${story.id}" 
+                  aria-label="Lihat detail cerita ${story.name || "Anonim"}"
+                  type="button"
+                  style="padding: 0.5rem 1rem; font-size: 0.9rem; border-radius: 8px; background-color: #007bff; color: white; border: none; cursor: pointer;">
+                  Lihat Detail
+                </button>
+
+                <button 
+                  class="save-btn btn-secondary-small" 
+                  data-id="${story.id}" 
+                  aria-label="Simpan cerita ${
+                    story.name || "Anonim"
+                  } untuk dibaca offline"
+                  type="button"
+                  style="padding: 0.5rem 1rem; font-size: 0.9rem; border-radius: 8px; background-color: #28a745; color: white; border: none; cursor: pointer;">
+                  💾 Simpan Offline
+                </button>
+              </div>
             </li>
           `
             )
@@ -72,22 +84,28 @@ export default class StoryListView {
   }
 
   _bindEvents() {
-    if (!this.container) return; // Pastikan container ada
-    // Delegasi event untuk tombol detail
+    if (!this.container) return;
     this.container.addEventListener("click", this._handleClick);
   }
 
   _handleClick(event) {
-    // Periksa apakah elemen yang diklik adalah tombol detail
-    if (event.target.classList.contains("detail-btn")) {
-      const id = event.target.dataset.id; // Ambil ID cerita dari data-attribute
-      if (this.onDetail) this.onDetail(id); // Panggil callback ke Presenter
+    const detailBtn = event.target.closest(".detail-btn");
+    const saveBtn = event.target.closest(".save-btn");
+
+    if (detailBtn) {
+      const id = detailBtn.dataset.id;
+      if (this.onDetail) this.onDetail(id);
+    }
+
+    if (saveBtn) {
+      const id = saveBtn.dataset.id;
+      if (this.onSave) this.onSave(id);
     }
   }
 
   showStories(stories) {
     this.stories = stories;
-    this.render(this.container); // Render ulang view dengan data cerita baru
+    this.render(this.container);
   }
 
   showStoryLoadError(message) {
@@ -103,8 +121,7 @@ export default class StoryListView {
 
   destroy() {
     if (!this.container) return;
-    // Hapus event listener untuk mencegah memory leaks
     this.container.removeEventListener("click", this._handleClick);
-    this.container.innerHTML = ""; // Bersihkan konten DOM
+    this.container.innerHTML = "";
   }
 }

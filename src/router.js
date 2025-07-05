@@ -1,22 +1,29 @@
 export default class Router {
   constructor(storyPresenter, authPresenter) {
-    this.storyPresenter = storyPresenter; // Mengganti 'presenter' menjadi 'storyPresenter' untuk kejelasan
+    this.storyPresenter = storyPresenter;
     this.authPresenter = authPresenter;
 
-    // Tambahkan event listener untuk hashchange
-    window.addEventListener("hashchange", () => this.route());
+    // Bind metode handleNavigation agar bisa dipakai dari luar
+    this.handleNavigation = this.route.bind(this);
+
+    // Dengarkan perubahan hash untuk navigasi
+    window.addEventListener("hashchange", this.handleNavigation);
   }
 
+  /**
+   * Dipanggil saat aplikasi pertama kali dimuat
+   */
   init() {
-    // Panggil route saat inisialisasi untuk menangani URL awal
-    this.route();
+    this.route(); // Tangani hash saat ini
   }
 
+  /**
+   * Menentukan tampilan berdasarkan hash URL
+   */
   route() {
     let hash = location.hash || "#/login"; // Default ke login jika tidak ada hash
 
-    // --- Autentikasi Guard ---
-    // Jika tidak login DAN hash bukan halaman login/register, paksa ke login
+    // ✅ 1. Guard: Paksa login jika belum login dan bukan di halaman login/register
     if (
       !this.authPresenter.isLoggedIn() &&
       !hash.startsWith("#/login") &&
@@ -26,20 +33,18 @@ export default class Router {
       return;
     }
 
-    // --- Implementasi View Transition API ---
-    // Fungsi wrapper untuk transisi halaman yang halus
+    // ✅ 2. Gunakan View Transition API jika tersedia
     const transition = (callback) => {
-      // Pastikan View Transitions API didukung sebelum menggunakannya
       if (document.startViewTransition) {
         document.startViewTransition(callback);
       } else {
-        callback(); // Fallback jika tidak didukung
+        callback(); // fallback biasa
       }
     };
 
-    // --- Logika Routing ---
+    // ✅ 3. Routing berdasarkan hash
     if (hash.startsWith("#/detail/")) {
-      const id = hash.split("/")[2]; // Ambil ID cerita dari hash
+      const id = hash.split("/")[2]; // contoh: #/detail/abc123
       transition(() => this.storyPresenter.showStoryDetail(id));
     } else if (hash.startsWith("#/stories")) {
       transition(() => this.storyPresenter.showStoryList());
@@ -52,15 +57,13 @@ export default class Router {
     } else if (hash.startsWith("#/logout")) {
       transition(() => this.authPresenter.logout());
     } else if (hash.startsWith("#/offline")) {
-      // Rute baru untuk View offline
-      // Panggil method showOfflineMessage dari StoryPresenter
       transition(() =>
         this.storyPresenter.showOfflineMessage(
           "Anda sedang offline atau terjadi masalah jaringan."
         )
       );
     } else {
-      // Fallback default: jika hash tidak dikenali, arahkan ke daftar cerita
+      // ✅ 4. Fallback: arahkan ke daftar cerita
       transition(() => this.storyPresenter.showStoryList());
     }
   }
